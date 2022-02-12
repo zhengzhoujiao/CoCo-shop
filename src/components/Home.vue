@@ -4,8 +4,8 @@
       <!-- 头部 -->
       <el-header>
         <div>
-          <img src="../assets/heima.png" alt />
-          <span>焦诗博的核弹研究平台</span>
+          <img class="headerImg" src="../assets/zxc.jpg" alt />
+          <span>{{this.$store.getters.getTheName}}管理平台</span>
         </div>
         <el-button type="info" @click="logout">退出</el-button>
       </el-header>
@@ -55,7 +55,7 @@ export default {
   },
   created() {
     this.getMenuList()
-    this.activePath = window.sessionStorage.getItem('activePath')
+    // this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
     logout() {
@@ -64,10 +64,8 @@ export default {
     },
     // 获取所有菜单
     async getMenuList() {
-      const { data: res } = await this.$http.get('menus')
-      if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-      this.menulist = res.data
-      console.log(res.data)
+      const {data:res} = await this.$http.get('page?rid='+ window.sessionStorage.getItem('Rid'))
+      this.menulist=res.result
     },
     // 点击按钮，切换菜单折叠
     toggleCollapse() {
@@ -86,7 +84,10 @@ export default {
 .home-container {
   height: 100%;
 }
-
+.headerImg{
+  width: 60px;
+  height: 60px;
+}
 .el-header {
   background-color: #373d41;
   display: flex;

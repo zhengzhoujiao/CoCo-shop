@@ -1,9 +1,8 @@
-// 发布阶段打包入口
+// 开发阶段打包人口
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-// 通过CDN方式引用降低打包大小
-// import './plugins/element.js'
+import './plugins/element.js'
 // 导入字体图标
 import './assets/fonts/iconfont.css'
 // 导入全局样式表
@@ -12,20 +11,31 @@ import './assets/css/global.css'
 import TreeTable from 'vue-table-with-tree-grid'
 // 导入富文本编辑器
 import VueQuillEditor from 'vue-quill-editor'
-// 导入富文本编辑器对应的样式 css样式表也会多合并到import集合文件导致体积很大因此开发模式下打包还需要放入public index
-// import 'quill/dist/quill.core.css'
-// import 'quill/dist/quill.snow.css'
-// import 'quill/dist/quill.bubble.css'
+// 导入富文本编辑器对应的样式
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 // 导入NProgress包对应的js和css事件加载进度条
 import NProgress from 'nprogress'
-// import 'nprogress/nprogress.css'
+import 'nprogress/nprogress.css'
 import axios from 'axios'
+import VueAMap from 'vue-amap'
+import store from './store'
+Vue.use(VueAMap);
+VueAMap.initAMapApiLoader({
+  key: 'ab92e11db961f439805b01dce7b7884e',
+  plugin: ['AMap.Geocoder','AMap.Autocomplete', 'AMap.PlaceSearch', 'AMap.Scale', 'AMap.OverView', 'AMap.ToolBar', 'AMap.MapType', 'AMap.PolyEditor', 'AMap.CircleEditor'],
+  v: '1.4.4'
+});
 // 配置请求的跟路径
-axios.defaults.baseURL = 'http://127.0.0.1:8888/api/private/v1/'
+axios.defaults.baseURL = 'http://localhost:5000/api/'
+axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
 // 在request拦截器中展示进度条
 axios.interceptors.request.use(config => {
   NProgress.start()
-  config.headers.Authorization = window.sessionStorage.getItem('token')
+  config.headers={
+    'Authorization':'Bearer '+window.sessionStorage.getItem('token')
+  }
   return config
 })
 // 在response拦截器中隐藏进度条NProgress.done()
@@ -56,5 +66,6 @@ Vue.use(VueQuillEditor)
 
 new Vue({
   router,
+  store,
   render: h => h(App)
 }).$mount('#app')

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --hot",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -14,9 +14,11 @@
     "lodash": "^4.17.15",
     "nprogress": "^0.2.0",
     "vue": "^2.5.22",
+    "vue-amap": "^0.5.10",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.1",
-    "vue-table-with-tree-grid": "^0.2.4"
+    "vue-table-with-tree-grid": "^0.2.4",
+    "vuex": "^3.6.0"
   },
   "devDependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",

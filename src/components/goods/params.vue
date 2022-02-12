@@ -20,7 +20,7 @@
             v-model="selectCateKeys"
             :options="cateList"
             expand-trigger="hover"
-            :props="{value:'cat_id',label:'cat_name',children:'children'}"
+            :props="{value:'id',label:'AttrCategory'}"
             @change="handleChange"
           ></el-cascader>
         </el-col>
@@ -28,119 +28,41 @@
       <!-- tab导航标签 v-model将激活页签的唯一name名称动态绑定到对应的值上tab-click点击任何页签都触发-->
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <!-- 添加动态参数面板 -->
-        <el-tab-pane label="动态参数" name="many">
-          <!-- 选择三级分类才启用 -->
-          <el-button
-            type="primary"
-            size="mini"
-            :disabled="isBtnDisabled"
-            @click="addDialogVisible = true
-          "
-          >添加参数</el-button>
+        <el-tab-pane label="属性" name="many">
           <!-- 动态表格 -->
-          <el-table :data="manyTableDate" border stripe>
-            <!-- expend展开行 -->
-            <el-table-column type="expand">
-              <template slot-scope="scope">
-                <el-tag
-                  v-for="(item, i) in scope.row.attr_vals"
-                  :key="i"
-                  closable
-                  @close="handleClose(i,scope.row)"
-                >{{item}}</el-tag>
-                <!-- 输入文本框 v-if="inputVisible"控制文本框和button的切换显示 -->
-                <el-input
-                  class="input-new-tag"
-                  v-if="scope.row.inputVisible"
-                  v-model="scope.row.inputValue"
-                  ref="saveTagInput"
-                  size="small"
-                  @keyup.enter.native="handleInputConfirm(scope.row)"
-                  @blur="handleInputConfirm(scope.row)"
-                ></el-input>
-                <!-- 添加按钮 -->
-                <el-button
-                  v-else
-                  class="button-new-tag"
-                  size="small"
-                  @click="showInput(scope.row)"
-                >+ New Tag</el-button>
-              </template>
-            </el-table-column>
+          <el-table :data="cateList" border stripe>
             <el-table-column type="index"></el-table-column>
-            <el-table-column label="参数名称" prop="attr_name"></el-table-column>
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <el-button
-                  type="primary"
-                  icon="el-icon-edit"
-                  size="mini"
-                  @click="showEditDialog(scope.row.attr_id)"
-                >编辑</el-button>
-                <el-button
-                  type="danger"
-                  icon="el-icon-delete"
-                  size="mini"
-                  @click="removeParams(scope.row.attr_id)"
-                >删除</el-button>
-              </template>
-            </el-table-column>
+            <el-table-column label="参数名称" prop="AttrCategory"></el-table-column>
           </el-table>
         </el-tab-pane>
         <!-- 添加静态属性面板 -->
-        <el-tab-pane label="静态属性" name="only">
-          <!-- 选择三级分类才启用 -->
+        <el-tab-pane label="属性详情" name="only">
+          <!-- 选择分类才启用 -->
           <el-button
             type="primary"
             size="mini"
-            :disabled="isBtnDisabled"
             @click="addDialogVisible = true"
           >添加属性</el-button>
           <!-- 静态表格 -->
           <el-table :data="onlyTableDate" border stripe>
-            <!-- expend展开行 -->
-            <el-table-column type="expand">
-              <template slot-scope="scope">
-                <el-tag
-                  v-for="(item, i) in scope.row.attr_vals"
-                  :key="i"
-                  closable
-                  @close="handleClose(i,scope.row)"
-                >{{item}}</el-tag>
-                <!-- 输入文本框 v-if="inputVisible"控制文本框和button的切换显示 -->
-                <el-input
-                  class="input-new-tag"
-                  v-if="scope.row.inputVisible"
-                  v-model="scope.row.inputValue"
-                  ref="saveTagInput"
-                  size="small"
-                  @keyup.enter.native="handleInputConfirm(scope.row)"
-                  @blur="handleInputConfirm(scope.row)"
-                ></el-input>
-                <!-- 添加按钮 -->
-                <el-button
-                  v-else
-                  class="button-new-tag"
-                  size="small"
-                  @click="showInput(scope.row)"
-                >+ New Tag</el-button>
-              </template>
-            </el-table-column>
             <el-table-column type="index"></el-table-column>
-            <el-table-column label="属性名称" prop="attr_name"></el-table-column>
+            <el-table-column label="属性名称" prop="name"></el-table-column>
+            <el-table-column label="属性价钱" prop="price"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
                 <el-button
                   type="primary"
                   icon="el-icon-edit"
                   size="mini"
-                  @click="showEditDialog(scope.row.attr_id)"
+                  :disabled="scope.row.orderNumber==0"
+                  @click="showEditDialog(scope.row)"
                 >编辑</el-button>
                 <el-button
                   type="danger"
                   icon="el-icon-delete"
                   size="mini"
-                  @click="removeParams(scope.row.attr_id)"
+                  :disabled="scope.row.orderNumber==0"
+                  @click="removeParams(scope.row.id)"
                 >删除</el-button>
               </template>
             </el-table-column>
@@ -159,10 +81,13 @@
         <el-form-item :label="titleText" prop="attr_name">
           <el-input v-model="addFrom.attr_name"></el-input>
         </el-form-item>
+        <el-form-item label="属性价格" prop="attr_price">
+          <el-input v-model="addFrom.attr_price"></el-input>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addParams">确 定</el-button>
+        <el-button type="primary" @click="addAttr">确 定</el-button>
       </span>
       <!-- 修改信息对话框 -->
     </el-dialog>
@@ -174,8 +99,11 @@
       width="30%"
     >
       <el-form :model="editFrom" :rules="editFromRules" ref="editFromRef" label-width="100px">
-        <el-form-item :label="titleText" prop="attr_name">
-          <el-input v-model="editFrom.attr_name"></el-input>
+        <el-form-item :label="titleText" prop="name">
+          <el-input v-model="editFrom.name"></el-input>
+        </el-form-item>
+        <el-form-item label="属性价格" prop="price">
+          <el-input v-model="editFrom.price"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -193,7 +121,7 @@ export default {
       //   商品分类列表
       cateList: [],
       //   级联选择框双向绑定的数组
-      selectCateKeys: [],
+      selectCateKeys: [-1,0,1],
       //   被激活页签名称
       activeName: 'many',
       // 动态表格数据
@@ -204,11 +132,15 @@ export default {
       addDialogVisible: false,
       // 添加参数表单数据
       addFrom: {
-        attr_name: ''
+        attr_name: '',
+        attr_price:''
       },
       // 添加表单验证规则
       addFromRules: {
         attr_name: [
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ],
+        attr_price: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
       },
@@ -220,8 +152,11 @@ export default {
       },
       // 修改表单的验证对象
       editFromRules: {
-        attr_name: [
+        name: [
           { required: true, message: '请输入参数名称', trigger: 'blur' }
+        ],
+        price: [
+          { required: true, message: '请输入参数价格', trigger: 'blur' }
         ]
       }
       // // 控制按钮和文本框切换
@@ -236,11 +171,26 @@ export default {
   methods: {
     // 获取所有商品分类列表
     async getCateList() {
-      const { data: res } = await this.$http.get('categories')
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取商品分类失败！')
+      // const { data: res } = await this.$http.get('categories')
+      // if (res.meta.status !== 200) {
+      //   return this.$message.error('获取商品分类失败！')
+      // }
+      this.cateList = [{AttrCategory:'加料',id:-1}
+        ,{AttrCategory:'温度',id:0}
+        ,{AttrCategory:'糖度',id:1}]
+    },
+    //添加属性
+    async addAttr(){
+      console.log(this.addFrom.attr_name)
+      console.log(this.addFrom.attr_price)
+      const { data: res } = await this.$http.post(`attributes/`,{AttrCategory:this.selectCateKeys[0],Name:this.addFrom.attr_name,Price:parseFloat(this.addFrom.attr_price)})
+      if (!res.isSucceed) {
+        return this.$message.error('查找属性失败')
       }
-      this.cateList = res.data
+      this.$message.success('查找属性成功')
+      this.onlyTableDate = res.result
+      console.log(this.onlyTableDate)
+      this.getnum()
     },
     // 级联选择框选择变化触发函数
     handleChange() {
@@ -252,79 +202,26 @@ export default {
     },
     // 获取数值数组给动态，静态表格
     async getnum() {
-      if (this.selectCateKeys.length !== 3) {
-        this.selectCateKeys = []
-        this.manyTableDate = []
-        this.onlyTableDate = []
-        return
-      }
+
       console.log(this.selectCateKeys)
       // 根据所选分类id和当前所属面板获取数据 params指定get参数
-      const { data: res } = await this.$http.get(
-        `categories/${this.cateId}/attributes`,
-        {
-          params: {
-            sel: this.activeName
-          }
-        }
-      )
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取参数失败！')
+      const { data: res } = await this.$http.get(`attributes/?attrCategory=${this.selectCateKeys[0]}
+`)
+      if (!res.isSucceed) {
+        return this.$message.error('查找属性失败')
       }
-      console.log(res.data)
-      res.data.forEach(item => {
-        item.attr_vals = item.attr_vals ? item.attr_vals.split(' ') : []
-        // 控制文本框显示与隐藏
-        item.inputVisible = false
-        // 文本框的输入值
-        item.inputValue = ''
-      })
-      console.log(res.data.attr_vals)
-      if (this.activeName === 'many') {
-        this.manyTableDate = res.data
-      } else {
-        this.onlyTableDate = res.data
-      }
+      this.$message.success('查找属性成功')
+      this.onlyTableDate = res.result
+      console.log(this.onlyTableDate)
     },
     // 监听对话框关闭事件刷新验证
     addDialogClose() {
       this.$refs.addFromRef.resetFields()
     },
-    // 点击按钮,添加参数
-    addParams() {
-      this.$refs.addFromRef.validate(async valid => {
-        if (!valid) {
-          return
-        }
-        const { data: res } = await this.$http.post(
-          `categories/${this.cateId}/attributes`,
-          {
-            attr_name: this.addFrom.attr_name,
-            attr_sel: this.activeName
-          }
-        )
-        console.log(res)
-        if (res.meta.status !== 201) {
-          return this.$message.error('添加参数失败！')
-        }
-        this.$message.success('添加参数成功')
-        this.addDialogVisible = false
-        this.getCateList()
-      })
-    },
     // 点击按钮展示修改对话框
-    async showEditDialog(attrid) {
-      const {
-        data: res
-      } = await this.$http.get(
-        `categories/${this.cateId}/attributes/${attrid}`,
-        { params: { attr_sel: this.activeName } }
-      )
-      console.log(res)
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取参数信息失败！')
-      }
-      this.editFrom = res.data
+    async showEditDialog(attr) {
+      console.log(attr)
+      this.editFrom = attr
       this.editDialogVisible = true
     },
     // 监听修改对话框关闭重置表单
@@ -332,29 +229,23 @@ export default {
       this.$refs.editFromRef.resetFields()
     },
     // 点击按钮修改参数
-    editParams() {
+    async editParams() {
       this.$refs.editFromRef.validate(async valid => {
         if (!valid) {
           return
         }
-        const { data: res } = await this.$http.put(
-          `categories/${this.cateId}/attributes/${this.editFrom.attr_id}`,
-          {
-            attr_name: this.editFrom.attr_name,
-            attr_sel: this.activeName
-          }
-        )
+        const { data: res } = await this.$http.put(`attributes/`,{AttrCategory:this.selectCateKeys[0],Name:this.editFrom.name,Price:parseFloat(this.editFrom.price)})
         console.log(res)
-        if (res.meta.status !== 200) {
-          return this.$message.error('修改失败')
-        }
-        this.$message.success('修改成功')
+      if (!res.isSucceed) {
+        return this.$message.error('修改属性失败')
+      }
+        this.$message.success('修改属性成功')
         this.getnum()
         this.editDialogVisible = false
       })
     },
     // 删除参数
-    async removeParams(attrid) {
+    async removeParams(id) {
       const confirmResult = await this.$confirm(
         '此操作将永久删除该参数, 是否继续?',
         '提示',
@@ -367,82 +258,36 @@ export default {
       if (confirmResult !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete(
-        `categories/${this.cateId}/attributes/${attrid}`
-      )
-      console.log(res)
-      if (res.meta.status !== 200) {
-        return this.$message.error('删除参数失败！')
+      const { data: res } = await this.$http.delete(`attributes/${id}`)
+      if (!res.isSucceed) {
+        return this.$message.error('删除属性失败')
       }
-      this.$message.success('删除参数成功！')
+      this.$message.success('删除属性成功')
       this.getnum()
     },
-    // 文本框失去焦点或按下enter都会触发 trim()去除字符串两端空格
-    async handleInputConfirm(row) {
-      // 如果输入内容是空格则刷新
-      if (row.inputValue.trim().length === 0) {
-        row.inputValue = ''
-        row.inputVisible = false
-        return
-      }
-      // 将新增数据压入attr_vals数组
-      row.attr_vals.push(row.inputValue.trim())
-      // 将修改过的数组同步更新到数据库  join拼接 将数组转成字符串
-      this.saveAttrVals(row)
-    },
-    // 将对attr_vals的操作保存到数据库
-    async saveAttrVals(row) {
-      const { data: res } = await this.$http.put(
-        `categories/${this.cateId}/attributes/${row.attr_id}`,
-        {
-          attr_name: row.attr_name,
-          attr_sel: row.attr_sel,
-          attr_vals: row.attr_vals.join(' ')
-        }
-      )
-      if (res.meta.status !== 200) {
-        return this.$message.error('添加参数失败')
-      }
-      this.$message.success('修改参数成功')
-    },
-    // 控制按钮和文本框的切换
-    showInput(row) {
-      row.inputVisible = true
-      // 让文本框自动获得焦点
-      // nextTick方法作用当页面上元素被重新渲染后(不然就没有此元素也无法获取焦点)才会指定调回函数中的代码
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus()
-      })
-    },
-    // tag删除
-    handleClose(i, row) {
-      // splice是在原数据上修改 删除此数组索引i的一个数据
-      row.attr_vals.splice(i, 1)
-      this.saveAttrVals(row)
-    }
   },
   // 计算属性
   computed: {
     // 如果按钮需要被禁用,则返回true,否则返回false
     isBtnDisabled() {
-      if (this.selectCateKeys.length !== 3) {
+      if (this.selectCateKeys.length !== 1) {
         return true
       }
       return false
     },
     // 当前选中的三级分类的id
     cateId() {
-      if (this.selectCateKeys.length === 3) {
-        return this.selectCateKeys[2]
+      if (this.selectCateKeys.length === 1) {
+        return this.selectCateKeys[0]
       }
       return null
     },
     // 动态计算标题文本
     titleText() {
       if (this.activeName === 'many') {
-        return '动态参数'
+        return '属性'
       }
-      return '静态属性'
+      return '属性详情'
     }
   }
 }

@@ -8,10 +8,6 @@ const Home = () => import(/* webpackChunkName: "login_home_welcome" */ './compon
 const Welcome = () => import(/* webpackChunkName: "login_home_welcome" */ './components/Welcome.vue')
 // import users from './components/user/users.vue'
 const users = () => import(/* webpackChunkName: "Users_Rights_Roles" */ './components/user/users.vue')
-// import Rights from './components/power/Rights.vue'
-const Rights = () => import(/* webpackChunkName: "Users_Rights_Roles" */ './components/power/Rights.vue')
-// import roles from './components/power/roles.vue'
-const roles = () => import(/* webpackChunkName: "Users_Rights_Roles" */ './components/power/roles.vue')
 // import Cate from './components/goods/Cate.vue'
 const Cate = () => import(/* webpackChunkName: "Cate_Params" */ './components/goods/Cate.vue')
 // import params from './components/goods/params.vue'
@@ -24,7 +20,11 @@ const Add = () => import(/* webpackChunkName: "GoodsList_Add" */ './components/g
 const Order = () => import(/* webpackChunkName: "Order_Report" */ './components/order/Order.vue')
 // import Report from './components/report/Report.vue'
 const Report = () => import(/* webpackChunkName: "Order_Report" */ './components/report/Report.vue')
-
+const ShopGoods = () => import( './components/goods/ShopAdd.vue')
+const worker = () => import( './components/user/worker.vue')
+const shopList = () => import( './components/shop/shopList.vue')
+const addShop = () => import( './components/shop/addShop.vue')
+const news = () => import( './components/new/new.vue')
 Vue.use(Router)
 
 const router = new Router({
@@ -38,14 +38,17 @@ const router = new Router({
       children: [
         { path: '/welcome', component: Welcome },
         { path: '/users', component: users },
-        { path: '/rights', component: Rights },
-        { path: '/roles', component: roles },
         { path: '/categories', component: Cate },
         { path: '/params', component: params },
         { path: '/goods', component: List },
         { path: '/goods/add', component: Add },
         { path: '/orders', component: Order },
-        { path: '/reports', component: Report }
+        { path: '/reports', component: Report },
+        { path: '/shopGoods',component:ShopGoods},
+        { path: '/worker',component:worker},
+        { path: '/shop',component:shopList},
+        { path: '/shop/add',component:addShop},
+        { path: '/news',component:news}
       ]
     }
   ]
